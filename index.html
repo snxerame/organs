@@ -715,7 +715,8 @@
                             <div class="card-label">Click to view details</div>
                         </div>
                         <div class="card-face card-back">
-                            <button class="edit-button" onclick="editOrgan('${organ.id}', event)" title="Edit">✎</button>
+                            <button class="edit-button" onclick="editOrgan('${organ.id}', event)" title="Edit" style="right: 55px;">✎</button>
+                            <button class="edit-button" onclick="deleteOrgan('${organ.id}', event)" title="Delete" style="background: rgba(255, 59, 48, 0.4);">✕</button>
                             <div class="organ-details">
                                 <div class="detail-item">
                                     <div class="detail-label">Organ</div>
@@ -724,6 +725,10 @@
                                 <div class="detail-item">
                                     <div class="detail-label">Location</div>
                                     <div class="detail-value">${organ.location}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Contact</div>
+                                    <div class="detail-value"><a href="tel:${organ.phoneNumber}" style="color: white; text-decoration: none;">${organ.phoneNumber}</a></div>
                                 </div>
                                 <div class="detail-item">
                                     <div class="detail-label">Time Remaining</div>
