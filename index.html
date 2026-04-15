@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organ Donation Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a0000 0%, #4a0000 25%, #8b0000 50%, #2d0000 75%, #000000 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .floating-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(220, 20, 60, 0.1);
+            backdrop-filter: blur(10px);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .shape:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            bottom: 10%;
+            left: 30%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-50px) rotate(120deg); }
+            66% { transform: translateY(30px) rotate(240deg); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff0000, #ff6b6b, #ff0000);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .add-button {
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(220, 20, 60, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+
+        .add-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .add-button:hover::before {
+            left: 100%;
+        }
+
+        .add-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 50px rgba(220, 20, 60, 0.6);
+        }
+
+        .add-button:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            height: 380px;
+            animation: fadeInUp 0.6s ease backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(220, 20, 60, 0.3);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            transform: rotateY(180deg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-back::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .organ-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.4);
+            border: 3px solid rgba(220, 20, 60, 0.5);
+        }
+
+        .organ-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .card-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .organ-details {
+            width: 100%;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .detail-item {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .expiry-countdown {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-top: 10px;
+        }
+
+        .countdown-small {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .countdown-item {
+            text-align: center;
+        }
+
+        .countdown-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: block;
+        }
+
+        .countdown-text {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+
+        .expired {
+            color: #ffcccc;
+            font-weight: 700;
+        }
+
+        .edit-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+            z-index: 10;
+        }
+
+        .edit-button:hover {
+            transform: scale(1.15);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+            overflow-y: auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+            margin: 5% auto;
+            padding: 50px;
+            border-radius: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 30px 90px rgba(220, 20, 60, 0.5);
+            animation: slideIn 0.4s ease;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(220, 20, 60, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #dc143c;
+            box-shadow: 0 0 0 4px rgba(220, 20, 60, 0.1);
+            background: white;
+        }
+
+        .image-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .image-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.3);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .modal-button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-button.primary {
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.4);
+        }
+
+        .modal-button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(220, 20, 60, 0.5);
+        }
+
+        .modal-button.secondary {
+            background: rgba(0, 0, 0, 0.05);
+            color: #333;
+        }
+
+        .modal-button.secondary:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .empty-state-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        .empty-state-text {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .modal-content {
+                padding: 30px;
+                margin: 10% auto;
+            }
+
+            .card-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Organ Donation Platform</h1>
+            <p class="subtitle">Saving Lives, One Donation at a Time</p>
+        </header>
+
+        <center>
+            <button class="add-button" onclick="openModal()">+ Register Organ</button>
+        </center>
+
+        <div id="cardsContainer" class="cards-grid"></div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-header" id="modalTitle">Register Organ</h2>
+            <form id="organForm">
+                <div class="form-group">
+                    <label for="organName">Organ Name</label>
+                    <input type="text" id="organName" placeholder="e.g., Kidney, Heart, Liver" required>
+                </div>
+                <div class="form-group">
+                    <label for="organImage">Upload Image</label>
+                    <input type="file" id="organImage" accept="image/*" required>
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+                <div class="form-group">
+                    <label for="expirationTime">Expiration Date & Time</label>
+                    <input type="datetime-local" id="expirationTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" placeholder="City, Hospital" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="modal-button secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="modal-button primary" id="submitBtn">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let organs = [];
+        let editingOrganId = null;
+        let countdownIntervals = {};
+
+        async function loadOrgans() {
+            try {
+                const response = await fetch('/api/organs');
+                const data = await response.json();
+                organs = data.organs || [];
+                renderOrgans();
+            } catch (error) {
+                console.error('Error loading organs:', error);
+            }
+        }
+
+        async function addOrgan(organData) {
+            try {
+                const response = await fetch('/api/organs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(organData)
+                });
+                const data = await response.json();
+                organs = data.organs || [];
+                renderOrgans();
+            } catch (error) {
+                console.error('Error adding organ:', error);
+            }
+        }
+
+        async function updateOrgan(id, organData) {
+            try {
+                await fetch('/api/organs', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+
+                const response = await fetch('/api/organs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(organData)
+                });
+                const data = await response.json();
+                organs = data.organs || [];
+                renderOrgans();
+            } catch (error) {
+                console.error('Error updating organ:', error);
+            }
+        }
+
+        function updateCountdown(organId, expirationTime) {
+            const countdownEl = document.getElementById(`countdown-${organId}`);
+            if (!countdownEl) return;
+
+            const now = new Date().getTime();
+            const expiry = new Date(expirationTime).getTime();
+            const distance = expiry - now;
+
+            if (distance < 0) {
+                countdownEl.innerHTML = '<div class="expired">EXPIRED</div>';
+                if (countdownIntervals[organId]) {
+                    clearInterval(countdownIntervals[organId]);
+                    delete countdownIntervals[organId];
+                }
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            countdownEl.innerHTML = `
+                <div class="countdown-small">
+                    <div class="countdown-item">
+                        <span class="countdown-number">${String(days).padStart(2, '0')}</span>
+                        <span class="countdown-text">Days</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number">${String(hours).padStart(2, '0')}</span>
+                        <span class="countdown-text">Hrs</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number">${String(minutes).padStart(2, '0')}</span>
+                        <span class="countdown-text">Min</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number">${String(seconds).padStart(2, '0')}</span>
+                        <span class="countdown-text">Sec</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderOrgans() {
+            const container = document.getElementById('cardsContainer');
+
+            // Clear existing intervals
+            Object.values(countdownIntervals).forEach(interval => clearInterval(interval));
+            countdownIntervals = {};
+
+            if (organs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🫀</div>
+                        <p class="empty-state-text">No organs registered yet. Register the first one!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = organs.map((organ, index) => `
+                <div class="card-container" style="animation-delay: ${index * 0.1}s">
+                    <div class="card" id="card-${organ.id}" onclick="flipCard('${organ.id}')">
+                        <div class="card-face card-front">
+                            <img src="${organ.image}" alt="${organ.name}" class="organ-image">
+                            <div class="organ-name">${organ.name}</div>
+                            <div class="card-label">Click to view details</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <button class="edit-button" onclick="editOrgan('${organ.id}', event)" title="Edit">✎</button>
+                            <div class="organ-details">
+                                <div class="detail-item">
+                                    <div class="detail-label">Organ</div>
+                                    <div class="detail-value">${organ.name}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Location</div>
+                                    <div class="detail-value">${organ.location}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Time Remaining</div>
+                                    <div class="expiry-countdown">
+                                        <div id="countdown-${organ.id}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Start countdown timers
+            organs.forEach(organ => {
+                updateCountdown(organ.id, organ.expirationTime);
+                countdownIntervals[organ.id] = setInterval(() => {
+                    updateCountdown(organ.id, organ.expirationTime);
+                }, 1000);
+            });
+        }
+
+        function flipCard(cardId) {
+            const card = document.getElementById(`card-${cardId}`);
+            card.classList.toggle('flipped');
+        }
+
+        function openModal() {
+            editingOrganId = null;
+            document.getElementById('modalTitle').textContent = 'Register Organ';
+            document.getElementById('submitBtn').textContent = 'Register';
+            document.getElementById('organName').disabled = false;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('organForm').reset();
+            document.getElementById('imagePreview').innerHTML = '';
+            editingOrganId = null;
+        }
+
+        function editOrgan(id, event) {
+            event.stopPropagation();
+            const organ = organs.find(o => o.id === id);
+            if (!organ) return;
+
+            editingOrganId = id;
+            document.getElementById('modalTitle').textContent = 'Edit Organ';
+            document.getElementById('submitBtn').textContent = 'Update';
+            document.getElementById('organName').value = organ.name;
+            document.getElementById('organName').disabled = false;
+
+            // Set datetime-local format
+            const date = new Date(organ.expirationTime);
+            const localDateTime = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('expirationTime').value = localDateTime;
+
+            document.getElementById('location').value = organ.location;
+            document.getElementById('imagePreview').innerHTML = `<img src="${organ.image}" alt="Preview">`;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        // Image preview
+        document.getElementById('organImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('imagePreview').innerHTML =
+                        `<img src="${event.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('organForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('organName').value.trim();
+            const expirationTime = document.getElementById('expirationTime').value;
+            const location = document.getElementById('location').value.trim();
+
+            let imageData;
+            const imageFile = document.getElementById('organImage').files[0];
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    imageData = event.target.result;
+
+                    const organData = {
+                        name,
+                        image: imageData,
+                        expirationTime,
+                        location
+                    };
+
+                    if (editingOrganId) {
+                        await updateOrgan(editingOrganId, organData);
+                    } else {
+                        await addOrgan(organData);
+                    }
+                    closeModal();
+                };
+                reader.readAsDataURL(imageFile);
+            } else if (editingOrganId) {
+                // If editing and no new image, use existing image
+                const existingOrgan = organs.find(o => o.id === editingOrganId);
+                const organData = {
+                    name,
+                    image: existingOrgan.image,
+                    expirationTime,
+                    location
+                };
+                await updateOrgan(editingOrganId, organData);
+                closeModal();
+            }
+        });
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadOrgans);
+    </script>
+</body>
+</html>
